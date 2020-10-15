@@ -22,6 +22,12 @@ export const Content = styled.div`
 
     width: 100%;
     max-width: 700px;
+    
+    img {
+        height: 300px;
+        width: 300px;
+        margin-bottom: 60px;
+    }
 
     form {
         margin-bottom: 40px;
@@ -29,7 +35,7 @@ export const Content = styled.div`
         text-align: center;
 
         h1 {
-            margin-bottom: 24px;
+            margin-bottom: 40px;
         }
     }
 
@@ -39,6 +45,7 @@ export const Content = styled.div`
         align-items: center;
         justify-content: center;
         text-decoration: none;
+        margin-top: 15px;
         transition: color 0.2s;
 
         svg {

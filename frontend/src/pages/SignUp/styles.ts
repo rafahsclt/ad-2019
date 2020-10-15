@@ -23,6 +23,11 @@ export const Content = styled.div`
     width: 100%;
     max-width: 700px;
 
+    img {
+        height: 300px;
+        width: 300px;
+    }
+
     form {
         margin-bottom: 40px;
         width: 340px;
