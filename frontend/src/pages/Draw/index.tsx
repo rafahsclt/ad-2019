@@ -1,21 +1,29 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useContext, useEffect } from 'react'
 import { gql, useQuery, useMutation } from '@apollo/client'
 import { FiPower, FiEdit, FiUser, FiCheckCircle, FiXCircle } from 'react-icons/fi'
+import { useHistory } from 'react-router-dom'
 
-import { Container, 
-    Content, 
-    Participants, 
-    MyUser, 
-    ChosenUser, 
-    User, 
-    ParticipantBox } from './styles'
+import { AuthContext } from '../../context/AuthContext'
+import {
+    Container,
+    Content,
+    Participants,
+    MyUser,
+    ChosenUser,
+    User,
+    ParticipantBox
+} from './styles'
 
 interface User {
     id: string
     name: string
     email: string
-    giftTips: string[]
+    giftTip1: string
+    giftTip2: string
     isChosen: boolean
+    nameSF: string
+    gift1SF: string
+    gift2SF: string
 }
 
 const GET_USERS = gql`
@@ -131,35 +139,46 @@ const users = [
 const Draw: React.FC = () => {
     const [chosenUser, setChosenUser] = useState<User>()
     const [participants, setParticipants] = useState(users)
+    const [myUser, setMyUser] = useState<User>({} as User)
 
-   /* const drawRandomPeople = useCallback(async (users: User[]) => {
-        const quantityOfUsers = users.length
+    const history = useHistory()
 
-        const chNumber = Math.floor(Math.random() * quantityOfUsers)
+    const { user, signOut } = useContext(AuthContext)
 
-        const chUser = users[chNumber]
+    useEffect(() => {
+        setMyUser(user as User)
+    }, [user])
 
-        await updateChosenUser({
-            variables: { id: chUser.id }
-        })
+    console.log(user)
 
-        setChosenUser(chUser)
-
-        return chUser
-    }, [])
-
-    
-
-    const { loading, error, data } = useQuery(GET_USERS, {
-        onCompleted: data => drawRandomPeople(data.UnchosenUsers)
-    })
-
-    const [updateChosenUser] = useMutation(UPDATE_CHOSEN_USER)
-    // const [createUser] = useMutation(CREATE_USER)
-
-    if (!loading && !error && data) {
-        
-    } */
+    /* const drawRandomPeople = useCallback(async (users: User[]) => {
+         const quantityOfUsers = users.length
+ 
+         const chNumber = Math.floor(Math.random() * quantityOfUsers)
+ 
+         const chUser = users[chNumber]
+ 
+         await updateChosenUser({
+             variables: { id: chUser.id }
+         })
+ 
+         setChosenUser(chUser)
+ 
+         return chUser
+     }, [])
+ 
+     
+ 
+     const { loading, error, data } = useQuery(GET_USERS, {
+         onCompleted: data => drawRandomPeople(data.UnchosenUsers)
+     })
+ 
+     const [updateChosenUser] = useMutation(UPDATE_CHOSEN_USER)
+     // const [createUser] = useMutation(CREATE_USER)
+ 
+     if (!loading && !error && data) {
+         
+     } */
 
     return (
         <Container>
@@ -169,16 +188,16 @@ const Draw: React.FC = () => {
                         <h1>Participantes</h1>
                     </header>
                     <main>
-                        {participants.map(user => (
-                            <ParticipantBox 
-                                key={user.id}
-                                
+                        {participants.map(participant => (
+                            <ParticipantBox
+                                key={participant.id}
+
                             >
                                 <div>
-                                    <FiUser size={22} color="#fff"/>
-                                    <span>{user.name}</span>
+                                    <FiUser size={22} color="#fff" />
+                                    <span>{participant.name}</span>
                                 </div>
-                                {user.isChosen ? 
+                                {participant.isChosen ?
                                     <FiCheckCircle size={22} color="#0c0" />
                                     :
                                     <FiXCircle size={22} color="#000" />
@@ -195,19 +214,23 @@ const Draw: React.FC = () => {
                                 <button>
                                     <FiEdit size={26} color="#fff" />
                                 </button>
-                                <button>
+                                <button onClick={() => {
+                                    signOut()
+                                    history.push('/')
+                                }}>
                                     <FiPower size={26} color="#fff" />
                                 </button>
                             </div>
                         </header>
                         <main>
-                            <h2>Nome : Rafael Leonen</h2>
-                            <h2>Email : rafah.sclt@gmail.com</h2>
+                            <h2>Nome : {myUser.name} </h2>
+                            <h2>Email : {myUser.email}</h2>
                             <span>Suas prefêrencias de presente</span>
                             <ul>
-                                <li>Roupa</li>
-                                <li>Chocolate</li>
+                                <li>{myUser.giftTip1}</li>
+                                <li>{myUser.giftTip2}</li>
                             </ul>
+                            
                         </main>
                     </MyUser>
                     <ChosenUser>

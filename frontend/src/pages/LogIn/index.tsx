@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useCallback } from 'react'
 import { FiArrowLeft, FiMail } from 'react-icons/fi'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
 import * as Yup from 'yup'
@@ -20,7 +20,8 @@ interface FormData {
 const LogIn: React.FC = () => {
     const formRef = useRef<FormHandles>(null)
 
-    const { logIn } = useContext(AuthContext)
+    const { user, logIn } = useContext(AuthContext)
+    const history = useHistory()
 
     const handleSubmit = useCallback(async (data: FormData): Promise<void> => {
         try {
@@ -34,7 +35,11 @@ const LogIn: React.FC = () => {
                 abortEarly: false
             }) 
 
-            logIn()
+            await logIn({
+                email: data.email
+            })
+
+            history.push('/draw')
         } catch (err) {
             const errors = getValidationError(err)
             formRef.current?.setErrors(errors)

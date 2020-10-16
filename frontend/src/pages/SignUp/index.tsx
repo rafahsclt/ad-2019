@@ -1,10 +1,10 @@
 import React, { useRef } from 'react'
 import { FiArrowLeft, FiMail, FiUser, FiGift } from 'react-icons/fi'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
 import * as Yup from 'yup'
-
+import { gql, useMutation } from '@apollo/client'
 
 import logoImg from '../../assets/logo.png'
 import Button from '../../components/Button'
@@ -19,8 +19,24 @@ interface FormData {
     gift2: string
 }
 
+const CREATE_USER = gql`
+    mutation createUser($name: String!, $email: String!, $giftTip1: String!, $giftTip2: String!) {
+        createUser(name: $name, email: $email, giftTip1: $giftTip1, giftTip2: $giftTip2) {
+            id,
+            name,
+            email,
+            giftTip1,
+            giftTip2,
+            isChosen
+        }
+    }
+`
+
 const SignUp: React.FC = () => {
     const formRef = useRef<FormHandles>(null)
+
+    const [createUser] = useMutation(CREATE_USER)
+    const history = useHistory()
 
     const handleSubmit = async (data: FormData): Promise<void> => {
         try {
@@ -38,6 +54,17 @@ const SignUp: React.FC = () => {
             await schema.validate(data, {
                 abortEarly: false
             }) 
+
+            await createUser({
+                variables: {
+                    name: data.name,
+                    email: data.email,
+                    giftTip1: data.gift,
+                    giftTip2: data.gift2
+                }
+            })
+
+            history.push('/log-in')
         } catch (err) {
             const errors = getValidationError(err)
             formRef.current?.setErrors(errors)

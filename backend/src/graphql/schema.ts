@@ -1,25 +1,29 @@
-import { ApolloServer, gql } from 'apollo-server'
+import { gql } from 'apollo-server'
 
 const typeDefs = gql`
     type User {
         id: ID!
         name: String!
         email: String!
-        giftTips: [String]
+        giftTip1: String
+        giftTip2: String
         isChosen: Boolean
-        yourSecretFriend: String
+        nameSF: String
+        gift1SF: String
+        gift2SF: String
     }
 
     type Query {
         users: [User!]
         user(id: ID!): User
-        UnchosenUsers: [User]
+        authenticate(email: String!): User
+        unchosenUsers: [User]
     }
 
     type Mutation {
-        createUser(name: String!, email: String!, giftTips: [String]): User
+        createUser(name: String!, email: String!, giftTip1: String, giftTip2: String): User
         updateChosenUser(id: String!): User
-        updateSecretUser(id: String!, yourSecretFriend: String!): User
+        updateSecretUser(id: String!, nameSF: String!, gift1SF: String!, gift2SF: String!): User
     }
 `
 
