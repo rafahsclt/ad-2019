@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useState, useEffect } from 'react'
-import { useLazyQuery, gql } from '@apollo/client'
+import api from '../services/api'
 
 interface AuthContextData {
     user: object
@@ -11,27 +11,9 @@ interface LogInCredentials {
     email: string
 }
 
-const LOGIN = gql`
-  query Authenticate($email: String!) {
-    authenticate(email: $email) {
-      id,
-      name,
-      email,
-      giftTip1,
-      giftTip2,
-      nameSF,
-      gift1SF,
-      gift2SF,
-    }
-  }
-`
-
-
-
 export const AuthContext = createContext<AuthContextData>({} as AuthContextData)
 
 export const AuthProvider: React.FC = ({ children }) => {
-
     const [user, setUser] = useState(() => {
         const storagedUser = localStorage.getItem('@AD-2019:')
 
@@ -42,25 +24,19 @@ export const AuthProvider: React.FC = ({ children }) => {
         return {}
     })
 
-    const [Authenticate , { loading, data }] = useLazyQuery(LOGIN)
 
     const logIn = useCallback(async ({ email } : LogInCredentials) => {
-        Authenticate({ variables: { email }})
-    },[Authenticate])
+            const user = await api.post('/sessions', { email })
+
+            setUser(user)
+
+            localStorage.setItem('@AD-2019:', JSON.stringify(user))
+    },[])
 
     const signOut = useCallback(() => {
         localStorage.removeItem('@AD-2019:')
         setUser({})
     },[])
-
-    useEffect(() => {
-        if(!loading && data) {
-
-            setUser(data.authenticate)
-
-            localStorage.setItem('@AD-2019:', JSON.stringify(data.authenticate))
-        }
-    }, [data, setUser])
 
     return (
         <AuthContext.Provider value={{ user, logIn, signOut }}>

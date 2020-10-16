@@ -41,6 +41,7 @@ const LogIn: React.FC = () => {
 
             history.push('/draw')
         } catch (err) {
+            console.log(err)
             const errors = getValidationError(err)
             formRef.current?.setErrors(errors)
         }

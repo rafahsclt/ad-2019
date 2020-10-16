@@ -42,12 +42,3 @@ export const Container = styled.div<InputProps>`
         }
     }
 `
-
-export const ErrorMessage = styled.div`
-    height: 28px;
-    margin-left: 16px;
-
-    svg {
-        margin: 0;
-    }
-`

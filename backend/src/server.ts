@@ -1,12 +1,14 @@
-import { ApolloServer } from 'apollo-server'
+import express from 'express'
 
 import './database'
 
-import typeDefs from './graphql/schema'
-import resolvers from './graphql/resolvers'
+import { userRouter, sessionRouter } from './routes'
 
-const server = new ApolloServer({ typeDefs, resolvers })
+const server = express()
+server.use(express.json())
 
-server.listen(4000).then(( { url } ) => {
-    console.log(`🚀  Server ready at ${url}`)
-})
+server.use('/user', userRouter)
+server.use('/session', sessionRouter)
+
+server.listen(3333, () => console.log('Servidor Iniciado!')
+)
