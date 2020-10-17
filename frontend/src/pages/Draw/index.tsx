@@ -1,9 +1,11 @@
 import React, { useState, useCallback, useContext, useEffect } from 'react'
-import { gql, useQuery, useMutation } from '@apollo/client'
 import { FiPower, FiEdit, FiUser, FiCheckCircle, FiXCircle } from 'react-icons/fi'
 import { useHistory } from 'react-router-dom'
 
 import { AuthContext } from '../../context/AuthContext'
+import api from '../../services/api'
+
+import Button from '../../components/Button'
 import {
     Container,
     Content,
@@ -14,8 +16,9 @@ import {
     ParticipantBox
 } from './styles'
 
+
 interface User {
-    id: string
+    _id: string
     name: string
     email: string
     giftTip1: string
@@ -26,119 +29,8 @@ interface User {
     gift2SF: string
 }
 
-const GET_USERS = gql`
-    query GetUser {
-        UnchosenUsers {
-            id,
-            name,
-            email,
-            giftTips,
-            isChosen
-        }
-    }
-`
-
-const UPDATE_CHOSEN_USER = gql`
-    mutation UpdateChosenUser($id: String!) {
-        updateChosenUser(id: $id) {
-            id,
-            name,
-            email,
-            giftTips,
-            isChosen
-        }
-    }
-`
-
-const CREATE_USER = gql`
-    mutation CreateUser($name: String!, $email: String!, $giftTips: [String!]) {
-        createUser(name: $name, email: $email, giftTips: $giftTips) {
-            id,
-            name,
-            email,
-            giftTips,
-            isChosen,
-            yourSecretFriend
-        }
-    }
-`
-
-const users = [
-    {
-        id: 1,
-        name: 'Rafael Leonen',
-        isChosen: true
-    },
-    {
-        id: 2,
-        name: 'Rafael Leonen',
-        isChosen: true
-    },
-    {
-        id: 3,
-        name: 'Rafael Leonen',
-        isChosen: true
-    },
-    {
-        id: 4,
-        name: 'Rafael Leonen',
-        isChosen: true
-    },
-    {
-        id: 5,
-        name: 'Rafael Leonen',
-        isChosen: true
-    },
-    {
-        id: 6,
-        name: 'Rafael Leonen',
-        isChosen: false
-    },
-    {
-        id: 7,
-        name: 'Rafael Leonen',
-        isChosen: false
-    },
-    {
-        id: 8,
-        name: 'Rafael Leonen',
-        isChosen: true
-    },
-    {
-        id: 9,
-        name: 'Rafael Leonen',
-        isChosen: true
-    },
-    {
-        id: 10,
-        name: 'Rafael Leonen',
-        isChosen: true
-    },
-    {
-        id: 11,
-        name: 'Rafael Leonen',
-        isChosen: true
-    },
-    {
-        id: 12,
-        name: 'Rafael Leonen',
-        isChosen: false
-    },
-    {
-        id: 13,
-        name: 'Rafael Leonen',
-        isChosen: false
-    },
-    {
-        id: 14,
-        name: 'Rafael Leonen',
-        isChosen: true
-    },
-]
-
 const Draw: React.FC = () => {
-    const [chosenUser, setChosenUser] = useState<User>()
-    const [participants, setParticipants] = useState(users)
+    const [participants, setParticipants] = useState<User[]>([])
     const [myUser, setMyUser] = useState<User>({} as User)
 
     const history = useHistory()
@@ -146,40 +38,39 @@ const Draw: React.FC = () => {
     const { user, signOut } = useContext(AuthContext)
 
     useEffect(() => {
-        setMyUser(user as User)
+        const typedUser = user as User
+
+        api.get('/user').then(response => {
+            setParticipants(response.data)
+        })
+
+        api.get(`/user/${typedUser._id}`).then(response => {
+            setMyUser(response.data)
+        })
     }, [user])
 
     console.log(user)
 
-    /* const drawRandomPeople = useCallback(async (users: User[]) => {
-         const quantityOfUsers = users.length
- 
-         const chNumber = Math.floor(Math.random() * quantityOfUsers)
- 
-         const chUser = users[chNumber]
- 
-         await updateChosenUser({
-             variables: { id: chUser.id }
-         })
- 
-         setChosenUser(chUser)
- 
-         return chUser
-     }, [])
- 
-     
- 
-     const { loading, error, data } = useQuery(GET_USERS, {
-         onCompleted: data => drawRandomPeople(data.UnchosenUsers)
-     })
- 
-     const [updateChosenUser] = useMutation(UPDATE_CHOSEN_USER)
-     // const [createUser] = useMutation(CREATE_USER)
- 
-     if (!loading && !error && data) {
-         
-     } */
+    const drawRandomPeople = useCallback(async () => {
+        const response = await api.get('/session')
 
+        const typedUser = user as User
+
+        const putResponse = await api.put(`/user/${typedUser._id}`, {
+            ...typedUser,
+            nameSF: response.data.name,
+            gift1SF: response.data.giftTip1,
+            gift2SF: response.data.giftTip2
+        })
+
+        setMyUser(putResponse.data)
+
+        await api.patch(`/user/${response.data._id}`, {
+            ...response.data,
+            isChosen: true
+        })
+     }, [user])
+ 
     return (
         <Container>
             <Content>
@@ -190,8 +81,7 @@ const Draw: React.FC = () => {
                     <main>
                         {participants.map(participant => (
                             <ParticipantBox
-                                key={participant.id}
-
+                                key={participant._id}
                             >
                                 <div>
                                     <FiUser size={22} color="#fff" />
@@ -230,21 +120,35 @@ const Draw: React.FC = () => {
                                 <li>{myUser.giftTip1}</li>
                                 <li>{myUser.giftTip2}</li>
                             </ul>
-                            
+
                         </main>
                     </MyUser>
                     <ChosenUser>
                         <header>
                             <h1>Pessoa sorteada</h1>
                         </header>
-                        <main>
-                            <h2>Letícia Silva</h2>
-                            <span>Dicas de presente</span>
-                            <ul>
-                                <li>Roupa</li>
-                                <li>Chocolate</li>
-                            </ul>
-                        </main>
+                        {
+                            myUser.nameSF ?
+                                <main>
+                                    <h2>{myUser.nameSF}</h2>
+                                    <span>Dicas de presente</span>
+                                    <ul>
+                                        <li>{myUser.gift1SF}</li>
+                                        <li>{myUser.gift2SF}</li>
+                                    </ul>
+                                </main>
+                                :
+                                <>
+                                    <h2>Você ainda não sorteou ninguém</h2>
+                                    <Button
+                                        style={{ marginTop: 40 }}
+                                        onClick={drawRandomPeople}
+                                    >
+                                        Sortear uma pessoa
+                                    </Button>
+                                </>
+                        }
+
                     </ChosenUser>
                 </User>
             </Content>

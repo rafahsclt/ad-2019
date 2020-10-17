@@ -20,7 +20,7 @@ interface FormData {
 const LogIn: React.FC = () => {
     const formRef = useRef<FormHandles>(null)
 
-    const { user, logIn } = useContext(AuthContext)
+    const { logIn } = useContext(AuthContext)
     const history = useHistory()
 
     const handleSubmit = useCallback(async (data: FormData): Promise<void> => {
@@ -41,11 +41,14 @@ const LogIn: React.FC = () => {
 
             history.push('/draw')
         } catch (err) {
+            if(err instanceof Yup.ValidationError) {
+                const errors = getValidationError(err)
+                formRef.current?.setErrors(errors)
+            }
+
             console.log(err)
-            const errors = getValidationError(err)
-            formRef.current?.setErrors(errors)
         }
-    },[logIn])
+    },[logIn, history])
 
     return (
         <Container>

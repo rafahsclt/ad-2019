@@ -20,7 +20,7 @@ const Landing: React.FC = () => {
                 </MainTextBox>
 
                 <Developer>
-                    <strong>Developed by</strong>
+                    <strong>Desenvolvido por</strong>
                     <span>Rafael Leonen</span>
                 </Developer>
 

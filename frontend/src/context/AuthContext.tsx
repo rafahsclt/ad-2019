@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useState, useEffect } from 'react'
+import React, { createContext, useCallback, useState } from 'react'
 import api from '../services/api'
 
 interface AuthContextData {
@@ -9,6 +9,18 @@ interface AuthContextData {
 
 interface LogInCredentials {
     email: string
+}
+
+interface User {
+    _id: string
+    name: string
+    email: string
+    giftTip1: string
+    giftTip2: string
+    isChosen: boolean
+    nameSF: string
+    gift1SF: string
+    gift2SF: string
 }
 
 export const AuthContext = createContext<AuthContextData>({} as AuthContextData)
@@ -26,11 +38,11 @@ export const AuthProvider: React.FC = ({ children }) => {
 
 
     const logIn = useCallback(async ({ email } : LogInCredentials) => {
-            const user = await api.post('/sessions', { email })
+            const response = await api.post('/session', { email })
 
-            setUser(user)
+            setUser(response.data)
 
-            localStorage.setItem('@AD-2019:', JSON.stringify(user))
+            localStorage.setItem('@AD-2019:', JSON.stringify(response.data))
     },[])
 
     const signOut = useCallback(() => {

@@ -1,14 +1,15 @@
 import express from 'express'
+import cors from 'cors'
 
 import './database'
 
-import { userRouter, sessionRouter } from './routes'
+import mainRouter from './routes'
 
 const server = express()
+
+server.use(cors())
 server.use(express.json())
 
-server.use('/user', userRouter)
-server.use('/session', sessionRouter)
+server.use(mainRouter)
 
-server.listen(3333, () => console.log('Servidor Iniciado!')
-)
+server.listen(3333, () => console.log('Servidor Iniciado!'))
