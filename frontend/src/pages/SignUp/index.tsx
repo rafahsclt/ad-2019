@@ -1,10 +1,11 @@
-import React, { useRef } from 'react'
+import React, { useRef, useContext } from 'react'
 import { FiArrowLeft, FiMail, FiUser, FiGift } from 'react-icons/fi'
 import { Link, useHistory } from 'react-router-dom'
 import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
 import * as Yup from 'yup'
 
+import { ToastContext } from '../../context/ToastContext'
 import logoImg from '../../assets/logo.png'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
@@ -25,6 +26,8 @@ const SignUp: React.FC = () => {
     const formRef = useRef<FormHandles>(null)
 
     const history = useHistory()
+
+    const { addToast } = useContext(ToastContext)
 
     const handleSubmit = async (data: FormData): Promise<void> => {
         try {
@@ -52,8 +55,19 @@ const SignUp: React.FC = () => {
 
             history.push('/log-in')
         } catch (err) {
-            const errors = getValidationError(err)
-            formRef.current?.setErrors(errors)
+            if(err instanceof Yup.ValidationError) {
+                const errors = getValidationError(err)
+                formRef.current?.setErrors(errors)
+    
+                addToast({
+                    title: 'Erro na validação',
+                    description: `${errors.name} - ${errors.email}`
+                })
+            } else {
+                addToast({
+                    title: 'Erro na autenticação'
+                })
+            }
         }
     }
 

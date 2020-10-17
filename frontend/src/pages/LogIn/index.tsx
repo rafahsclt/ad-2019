@@ -10,6 +10,7 @@ import getValidationError from '../../utils/getValidationError'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
 import { AuthContext } from '../../context/AuthContext'
+import { ToastContext } from '../../context/ToastContext'
 
 import { Container, Content, Background } from './styles'
 
@@ -21,6 +22,7 @@ const LogIn: React.FC = () => {
     const formRef = useRef<FormHandles>(null)
 
     const { logIn } = useContext(AuthContext)
+    const { addToast } = useContext(ToastContext)
     const history = useHistory()
 
     const handleSubmit = useCallback(async (data: FormData): Promise<void> => {
@@ -43,12 +45,20 @@ const LogIn: React.FC = () => {
         } catch (err) {
             if(err instanceof Yup.ValidationError) {
                 const errors = getValidationError(err)
+                console.log(errors)
                 formRef.current?.setErrors(errors)
-            }
 
-            console.log(err)
+                addToast({
+                    title: 'Erro de validação',
+                    description: `${errors.email}`
+                })
+            } else {
+                addToast({
+                    title: 'Erro na autenticação'
+                })
+            }
         }
-    },[logIn, history])
+    },[logIn, history, addToast])
 
     return (
         <Container>

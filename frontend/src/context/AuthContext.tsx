@@ -11,25 +11,11 @@ interface LogInCredentials {
     email: string
 }
 
-interface User {
-    _id: string
-    name: string
-    email: string
-    giftTip1: string
-    giftTip2: string
-    isChosen: boolean
-    nameSF: string
-    gift1SF: string
-    gift2SF: string
-}
-
 export const AuthContext = createContext<AuthContextData>({} as AuthContextData)
 
 export const AuthProvider: React.FC = ({ children }) => {
     const [user, setUser] = useState(() => {
         const storagedUser = localStorage.getItem('@AD-2019:')
-
-        console.log(storagedUser)
 
         if(storagedUser) return JSON.parse(storagedUser)
 

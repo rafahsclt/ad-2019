@@ -49,8 +49,6 @@ const Draw: React.FC = () => {
         })
     }, [user])
 
-    console.log(user)
-
     const drawRandomPeople = useCallback(async () => {
         const response = await api.get('/session')
 
@@ -101,7 +99,7 @@ const Draw: React.FC = () => {
                         <header>
                             <h1>Seu usuário</h1>
                             <div>
-                                <button>
+                                <button onClick={() => history.push('/profile')}>
                                     <FiEdit size={26} color="#fff" />
                                 </button>
                                 <button onClick={() => {
