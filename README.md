@@ -7,7 +7,7 @@
 ![landing](https://user-images.githubusercontent.com/60005589/96326859-b954ec80-100a-11eb-8063-ba5900ee0367.PNG)
 
 ### SignUp (Tela de Cadastro)
-Ao utilizar o aplicativo pela primeira vez, é sugerido que fala a criação de mais de 1 usuários
+Ao utilizar o aplicativo pela primeira vez, é sugerido que faça a criação de mais de 1 usuário
 ![signup](https://user-images.githubusercontent.com/60005589/96326899-fd47f180-100a-11eb-9d83-a780a979be77.PNG)
 
 ### LogIn
@@ -34,6 +34,6 @@ Nessa página os inputs ja trazem as informações do usuário como padrão e ta
 
 # To Do
   Alguns problemas ainda não solucionados :
-  - Não há tratativa de erro quando tentam realizar o sorteio com apenas um pessoa adastrada
+  - Não há tratativa de erro quando tentam realizar o sorteio com apenas um pessoa cadastrada
   - A pessoa tem possibilidade de sortear ela mesmo
   - As rotas não são separadas em autenticadas e não autenticadas
